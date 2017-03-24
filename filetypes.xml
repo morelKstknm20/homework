@@ -1,0 +1,9 @@
+<application>
+  <component name="FileTypeManager" version="17">
+    <extensionMap>
+      <mapping pattern="infoReader" type="CLASS" />
+      <mapping pattern="fileReader" type="CLASS" />
+      <mapping pattern="meminfo" type="PLAIN_TEXT" />
+    </extensionMap>
+  </component>
+</application>
