@@ -32,24 +32,12 @@ public class UDPServerThread implements Runnable{
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        while(true)
-        {
+        while (true) {
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             InetAddress IPAddress = receivePacket.getAddress();
             int port = receivePacket.getPort();
-            int data;
-            for (Double b : PercentMemoryUsed.values()) {
-                sendData[] =b;
-            }
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                try {
-                    serverSocket.send(sendPacket);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            ;
 
+        }
     }
 }

@@ -17,7 +17,8 @@ class PerformanceMonitorClient implements Runnable {
     private static int serverPort;
     private byte[] receiveData = new byte[DEFAULT_BYTE_SIZE];
     private byte[] sendData = new byte[DEFAULT_BYTE_SIZE];
-
+    private double PercentMemUsed;
+    private String hostName;
     PerformanceMonitorClient() {
         this.serverAddress = null;
         this.serverPort = 0;
@@ -29,8 +30,20 @@ class PerformanceMonitorClient implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
         PerformanceMonitorClientGUI gui = new PerformanceMonitorClientGUI();
+        MeminfoReaderThread meminfoReaderThread = new MeminfoReaderThread();
+        this.PercentMemUsed = meminfoReaderThread.getPercentMemUsed();
+        long start = System.currentTimeMillis( );
+        long end = System.currentTimeMillis( );
+        long diff = end - start;
+        double time = diff;
+        try {
+            gui.addDataPoint(hostName,time,PercentMemUsed);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
         public void send(String memUsed) throws IOException {
@@ -47,7 +60,7 @@ class PerformanceMonitorClient implements Runnable {
         }
 
     public void main(String[] args) throws SocketException, UnknownHostException, IOException {
-
+            MeminfoReaderThread meminfoReaderThread = new MeminfoReaderThread();
             PerformanceMonitorClient performanceMonitorClient = new PerformanceMonitorClient();
             new Thread(performanceMonitorClient).start();
         }

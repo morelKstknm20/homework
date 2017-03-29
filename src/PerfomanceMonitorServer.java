@@ -7,11 +7,14 @@
 
 import mpi.*;
 
+import java.util.HashMap;
 
 
 class PerformanceMonitorServer {
     private Comm comm;
     static String hostname;
+    private HashMap<Integer, String> Hostname;
+    private HashMap<Integer, Double> PercentMemUsed;
 
     public PerformanceMonitorServer(Comm comm) {
         this.comm = comm;
@@ -23,7 +26,8 @@ class PerformanceMonitorServer {
         int data[] = new int[np];
 
         data[0] = rank;
-        this.comm.gather(data, 1, MPI.LONG_INT, 0);
+
+        this.comm.gather(data, 1, MPI.INT, 0);
 
         if (rank == 0) {
             for (int i = 0; i < np; i++)
@@ -32,9 +36,6 @@ class PerformanceMonitorServer {
     }
 
     public static void main(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            hostname = args[i];
-        }
         try {
             MPI.Init(args);
             Comm comm = MPI.COMM_WORLD;

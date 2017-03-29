@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
@@ -6,59 +8,73 @@ import java.io.RandomAccessFile;
 public class MeminfoReaderThread implements Runnable{
     private double MemTotal;
     private double MemAvail;
+    private double PercentMemUsed;
 
     MeminfoReaderThread(){
         MemAvail=0;
         MemTotal=0;
+        PercentMemUsed =0;
+    }
+
+    public double getPercentMemUsed(){
+        PercentMemUsed = MemAvail/MemTotal;
+        return PercentMemUsed *100;
     }
 
     public double getMemTotal() {
         try {
             RandomAccessFile in = new RandomAccessFile("/proc/meminfo", "r");
             String line;
-            double MemTotal = Long.valueOf(0);
-            double MemAvail = Long.valueOf(0);
-            while (true) {
-                line = in.readLine();
-                if (line != null) {
+            while ((line = in.readLine()) != null) {
                     line = line.trim().replaceAll(" +", " ");
                     if (line.contains("MemTotal:")) {
                         String data[] = line.split(" ");
                         MemTotal = Long.parseLong(data[1]);
-                        return getMemTotal();
                     }
                 }
-            }
+                in.seek(0);
+            } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
         catch (Exception ex) {
             System.out.println("Ops, something went wrong: " + ex);
         }
-        return 0;
+        return MemTotal;
     }
     public double getMemAvail() {
         try {
             RandomAccessFile in = new RandomAccessFile("/proc/meminfo", "r");
             String line;
-            double MemAvail = Long.valueOf(0);
             while ((line = in.readLine()) != null) {
                 line = line.trim().replaceAll(" +", " ");
                 if (line.contains("MemAvailable:")) {
                     String data[] = line.split(" ");
                     MemAvail = Long.parseLong(data[1]);
-                    return getMemAvail();
                 }
             }
             in.seek(0);
         } catch (Exception ex) {
             System.out.println("Ops, something went wrong: " + ex);
         }
-        return 0;
+        return MemAvail;
     }
 
     public void run() {
        while(true){
            this.MemAvail=getMemAvail();
            this.MemTotal=getMemTotal();
+           this.PercentMemUsed=getPercentMemUsed();
+           System.out.println(PercentMemUsed);
+           try {
+               Thread.sleep(5000);
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           }
        }
+    }
+
+    public static void main(String[] args) {
+        MeminfoReaderThread meminfoReaderThread = new MeminfoReaderThread();
+        meminfoReaderThread.run();
     }
 }
